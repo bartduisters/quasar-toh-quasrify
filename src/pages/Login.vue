@@ -44,14 +44,18 @@ export default defineComponent({
     const { emailRules, passwordRules } = useValidators();
 
     const login = () => {
-      authenticate(user.email, user.password)
-        .then(() => {
-          void router.push({ name: ROUTE_NAMES.DASHBOARD });
-        })
-        .finally(() => {
-          user.email = '';
-          user.password = '';
-        });
+      void formRef.value.validate().then((valid) => {
+        if (valid) {
+          authenticate(user.email, user.password)
+            .then(() => {
+              void router.push({ name: ROUTE_NAMES.DASHBOARD });
+            })
+            .finally(() => {
+              user.email = '';
+              user.password = '';
+            });
+        }
+      });
     };
 
     const formRef = ref({} as QForm);
