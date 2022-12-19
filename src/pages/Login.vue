@@ -1,19 +1,35 @@
 <template>
   <div class="login-container">
-    <div class="login-fields">
-      <q-input outlined dense type="email" v-model="user.email" />
-      <q-input outlined dense type="password" v-model="user.password" />
-    </div>
+    <q-form class="login-fields" ref="formRef" greedy>
+      <q-input
+        outlined
+        dense
+        type="email"
+        v-model="user.email"
+        :rules="emailRules"
+        lazy-rules
+      />
+      <q-input
+        outlined
+        dense
+        type="password"
+        v-model="user.password"
+        :rules="passwordRules"
+        lazy-rules
+      />
+    </q-form>
     <StyledButton @click="login()">Login</StyledButton>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import { useAuth } from 'src/services/auth.service';
 import StyledButton from 'src/components/StyledButton.vue';
 import { useRouter } from 'vue-router';
 import { ROUTE_NAMES } from 'src/router/routes';
+import { QForm } from 'quasar';
+import { useValidators } from 'src/services/validator.composable';
 
 export default defineComponent({
   components: { StyledButton },
@@ -24,6 +40,8 @@ export default defineComponent({
       email: '',
       password: '',
     });
+
+    const { emailRules, passwordRules } = useValidators();
 
     const login = () => {
       authenticate(user.email, user.password)
@@ -36,9 +54,15 @@ export default defineComponent({
         });
     };
 
+    const formRef = ref({} as QForm);
+
     return {
       login,
       user,
+
+      formRef,
+      emailRules,
+      passwordRules,
     };
   },
 });
